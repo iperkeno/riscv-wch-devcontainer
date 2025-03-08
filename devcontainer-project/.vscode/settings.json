@@ -1,0 +1,7 @@
+{
+	"files.associations": {
+		"*.include": "makefile",
+		"string.h": "c",
+		"debug.h": "c"
+	}
+}

@@ -1,0 +1,142 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json
+// Dev Container metadata reference: https://containers.dev/implementors/json_reference/
+{
+	"name": "ev/vscode-riscv-ch32",
+
+	// build from GitHub container registry package
+	// https://github.com/cooked?tab=packages&repo_name=vscode-zephyr-devcontainer
+	//"image" : "ghcr.io/cooked/vscode-zephyr-devcontainer-stm32",
+
+	// Build image locally from provided Dockerfile
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".." // Set the build context to the parent directory
+	},
+	
+	"initializeCommand": "docker build -f .devcontainer/Dockerfile --network host -t ev/riscv-dev-container:1.0 .",
+	// Privileged container in order to access /dev
+	"privileged": true,
+
+
+
+	// The optional 'runArgsP' property can be used to specify additional runtime arguments.
+	"runArgs": [
+			"-v", "/dev:/dev",  //
+			"--privileged"   // allows access to tty* devices
+	],
+
+	// https://code.visualstudio.com/remote/advancedcontainers/change-default-source-mount
+	// "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+	"workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind",
+	"workspaceFolder": "/home/vscode_docker_user/workspace",
+
+
+	
+	// see https://code.visualstudio.com/remote/advancedcontainers/add-local-file-mount
+	// mount local folder that are external to the workspace
+
+	// "mounts": [
+	// 	"source=${env:HOME}/research-zephyr/samples,target=${containerWorkspaceFolder}/samples,type=bind,consistency=cached",
+	// ],
+
+	// Mount USB devices (debug probes, UART interfaces, ...)
+	"mounts": [
+		"source=/dev/bus/usb/,target=/dev/bus/usb/,type=bind"
+	],
+
+	// make a list of ports inside the container available locally
+	"forwardPorts": [
+	],
+
+	// "remoteEnv": {
+	// 	"PATH": "/opt/xpack-riscv-toolchain/bin:${PATH}"
+	// },
+	// Make a list of ports inside the container available locally.
+	// "forwardPorts": [3000],
+
+	// Set default properties for specific forwarded ports.
+	// "portsAttributes": {
+	// 	"3000": {
+	// 	  "label": "Hello Remote World",
+	// 	  "onAutoForward": "notify"
+	// 	}
+	// }
+	
+	// A command string or list of command arguments to run after the container is created.
+	//"postCreateCommand": "yarn install"
+	
+	// Overrides the user that VS Code runs as in the container (along with sub-processes). 
+	// Defaults is  "containerUser".
+	//"remoteUser": "root",
+	"remoteUser": "vscode_docker_user", 
+	//"remoteUser": "${localEnv:USER}",
+	//"updateRemoteUserUID": true,
+
+    // Configure tool-specific exyension and properties.
+    // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_vs-code-specific-properties
+    "customizations": {
+        "vscode": {
+			"settings": {
+
+				"terminal.integrated.defaultProfile.linux" : "bash",
+				"extensions.ignoreRecommendations": true,
+
+				"[cmake]": {
+				  "editor.tabSize": 8,
+				  "editor.insertSpaces": false
+				},
+				"[makefile]": {
+				  "editor.tabSize": 8,
+				  "editor.insertSpaces": false
+				},
+		
+				"files.associations": {
+				  "*.c": "c",
+				  "*.h": "c",
+				  "*.inc": "c",
+				  "*.s": "riscv",
+				  "*.S": "riscv",
+				  "*.asm": "riscv",
+				  "*.ld": "linkerscript"
+				},
+				
+				"editor.insertSpaces": true,
+				"editor.rulers": [80],
+				"editor.tabSize": 2,
+		
+				"C_Cpp.default.compilerPath": "/opt/gcc-riscv-none-elf/bin/riscv-none-elf-gcc",
+				"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+				"C_Cpp.default.intelliSenseMode": "linux-gcc-x86",
+				
+				"cmake.configureOnOpen": true,
+				"cmake.languageSupport.dotnetPath": "/opt/dotnet/dotnet", // ???
+				"cmake.languageSupport.enableFileAPI": true,
+				"cmake.showSystemKits": false,
+				"cmake.options.statusBarVisibility": "visible"
+			},
+            "extensions": [
+                //---------- core
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"ms-vscode.cmake-tools",
+				"ms-vscode.vscode-embedded-tools",
+
+                //----------- debug
+                //"mcu-debug.debug-tracker-vscode", // needed by cortex-debug
+                "ms-vscode.vscode-serial-monitor",
+				//----------- editing
+                "stkb.rewrap",
+                "wayou.vscode-todo-highlight",
+                //----------- task utils
+			    "augustocdias.tasks-shell-input", // needed by dynamic task input
+
+				"josetr.cmake-language-support-vscode",
+				"keroc.hex-fmt",
+				"trond-snekvik.gnu-mapfiles",
+				"zhwu95.riscv",
+				"ZixuanWang.linkerscript"
+            ]
+        }
+    }
+
+}
